@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sift</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── LEFT: Sidebar ──────────────────────────── -->
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="traffic-lights">
+          <div class="traffic-dot dot-red"></div>
+          <div class="traffic-dot dot-yellow"></div>
+          <div class="traffic-dot dot-green"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="sidebar-section">
+          <div class="sidebar-label" data-section="favorites">
+            <span class="section-chevron">›</span><span>Favourites</span>
+          </div>
+          <div class="sidebar-section-content" id="favorites"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label" data-section="locations">
+            <span class="section-chevron">›</span><span>Locations</span>
+          </div>
+          <div class="sidebar-section-content" id="drives"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label" data-section="tools">
+            <span class="section-chevron">›</span><span>Tools</span>
+          </div>
+          <div class="sidebar-section-content">
+            <button class="sidebar-item tool-item" id="tool-duplicates" onclick="openTool('duplicates')">
+              <span class="sidebar-icon">📋</span> Deduplicator
+            </button>
+            <button class="sidebar-item tool-item" id="tool-search" onclick="openTool('search')">
+              <span class="sidebar-icon">🔍</span> Smart Search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Toolbar + Content ───────────────── -->
+    <div class="right-panel">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="nav-group">
+          <button class="nav-btn" id="btn-back" title="Back" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="nav-btn" id="btn-forward" title="Forward" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <div class="toolbar-title" id="toolbar-title">Downloads</div>
+        <div class="toolbar-spacer"></div>
+
+        <!-- View toggle — 4 modes -->
+        <div class="view-group">
+          <button class="view-btn" id="btn-icon-view" title="Icons">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="view-btn active" id="btn-list-view" title="List">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <button class="view-btn" id="btn-column-view" title="Columns">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="5.5" height="18" rx="1"/><rect x="9.25" y="3" width="5.5" height="18" rx="1"/><rect x="16.5" y="3" width="5.5" height="18" rx="1"/></svg>
+          </button>
+          <button class="view-btn" id="btn-gallery-view" title="Gallery">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="13" rx="1.5"/><rect x="2" y="17" width="5" height="5" rx="0.8"/><rect x="9.5" y="17" width="5" height="5" rx="0.8"/><rect x="17" y="17" width="5" height="5" rx="0.8"/></svg>
+          </button>
+        </div>
+
+        <!-- Search with filter dropdown -->
+        <div class="search-box">
+          <span class="search-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          </span>
+          <input type="text" id="search-input" placeholder="Search" />
+          <div class="search-filters" id="search-filters">
+            <button class="search-filter active" data-filter="all">All</button>
+            <button class="search-filter" data-filter="folders">Folders</button>
+            <button class="search-filter" data-filter="documents">Docs</button>
+            <button class="search-filter" data-filter="images">Images</button>
+            <button class="search-filter" data-filter="archives">Archives</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content area -->
+      <div class="content">
+
+        <!-- List / Icon view -->
+        <div id="view-files" class="view active">
+          <div class="file-header" id="file-header">
+            <div class="col-name">Name</div>
+            <div class="col-size">Size</div>
+            <div class="col-modified">Date Modified</div>
+            <div class="col-type">Kind</div>
+          </div>
+          <div class="file-list" id="file-list"></div>
+        </div>
+
+        <!-- Column view -->
+        <div id="view-columns" class="view">
+          <div class="column-container" id="column-container"></div>
+        </div>
+
+        <!-- Gallery view -->
+        <div id="view-gallery" class="view">
+          <div class="gallery-preview" id="gallery-preview"></div>
+          <div class="gallery-strip" id="gallery-strip"></div>
+        </div>
+
+        <!-- Deduplicator tool view -->
+        <div id="view-duplicates" class="view">
+          <div class="tool-header">
+            <h2>Deduplicator</h2>
+            <p class="tool-desc">Find exact duplicate files and reclaim wasted disk space.</p>
+          </div>
+
+          <div class="dedup-picker">
+            <label class="dedup-label">Folder to scan</label>
+            <div class="dedup-path-row">
+              <input type="text" class="dedup-path-input" id="scan-path-input" placeholder="C:\Users\..." />
+              <button class="btn btn-secondary" id="btn-use-current" title="Use the folder you're currently browsing">Current Folder</button>
+            </div>
+            <div class="dedup-quick-paths" id="dedup-quick-paths"></div>
+          </div>
+
+          <div class="dedup-options">
+            <button class="btn btn-primary" id="btn-scan" onclick="startScan()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+              Scan
+            </button>
+            <span class="scan-status" id="scan-status"></span>
+          </div>
+
+          <div id="scan-results" style="overflow-y:auto;flex:1;padding-bottom:12px;"></div>
+        </div>
+
+        <!-- Smart search tool view -->
+        <div id="view-search" class="view">
+          <div class="tool-header">
+            <h2>Smart Search</h2>
+            <p class="tool-desc">Ask a question in plain English — find files by meaning, not just filename.</p>
+          </div>
+          <div class="search-bar-big">
+            <input type="text" id="smart-search-input" placeholder='Try: "Where is my assignment about scheduling?"' />
+            <button class="btn btn-primary" onclick="smartSearch()">Search</button>
+          </div>
+          <div class="tool-actions">
+            <button class="btn btn-secondary" id="btn-index" onclick="startIndex()">Index Current Folder</button>
+            <span class="index-status" id="index-status"></span>
+          </div>
+          <div id="search-results" style="overflow-y:auto;flex:1;padding-bottom:12px;"></div>
+        </div>
+      </div>
+
+      <!-- Path bar -->
+      <div class="pathbar" id="pathbar"></div>
+    </div>
+  </div>
+
+  <!-- Quick Look overlay -->
+  <div class="quicklook-overlay" id="quicklook-overlay">
+    <div class="quicklook-window">
+      <div class="quicklook-titlebar">
+        <div class="traffic-lights ql-lights">
+          <div class="traffic-dot dot-red" id="ql-close"></div>
+        </div>
+        <span class="quicklook-filename" id="ql-filename"></span>
+        <button class="btn btn-secondary quicklook-open" id="ql-open">Open</button>
+      </div>
+      <div class="quicklook-content" id="ql-content"></div>
+      <div class="quicklook-footer" id="ql-footer"></div>
+    </div>
+  </div>
+
+  <!-- Context menu -->
+  <div class="context-menu" id="context-menu">
+    <div class="ctx-item" data-action="open">Open</div>
+    <div class="ctx-item" data-action="quicklook">Quick Look<span class="ctx-shortcut">Space</span></div>
+    <div class="ctx-separator"></div>
+    <div class="ctx-item" data-action="getinfo">Get Info</div>
+    <div class="ctx-item" data-action="copypath">Copy Path</div>
+    <div class="ctx-item" data-action="reveal">Show in Explorer</div>
+    <div class="ctx-separator"></div>
+    <div class="ctx-label">Tags</div>
+    <div class="ctx-tags">
+      <span class="ctx-tag" style="background:#ff3b30"></span>
+      <span class="ctx-tag" style="background:#ff9500"></span>
+      <span class="ctx-tag" style="background:#ffcc00"></span>
+      <span class="ctx-tag" style="background:#34c759"></span>
+      <span class="ctx-tag" style="background:#007aff"></span>
+      <span class="ctx-tag" style="background:#af52de"></span>
+      <span class="ctx-tag" style="background:#8e8e93"></span>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

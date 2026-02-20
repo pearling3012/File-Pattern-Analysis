@@ -1,0 +1,23 @@
+[project]
+name = "file-deduplicator"
+version = "3.0.0"
+description = "Finder-like file explorer with duplicate detection and semantic search"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "blake3>=1.0.0",
+    "chromadb>=0.5.0",
+    "ollama>=0.4.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "jinja2>=3.1.0",
+    "pymupdf>=1.24.0",
+    "python-docx>=1.1.0",
+    "pywebview>=5.0",
+]
+
+[project.optional-dependencies]
+ocr = ["easyocr>=1.7.0"]
+
+[project.scripts]
+dedup = "src.main:main"
